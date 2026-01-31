@@ -1,23 +1,275 @@
 <!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
-<html>
+<html lang="en">
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Fun Times at Puzzle Park</title>
-        <meta name="description" content="">
+        <title>JUMPSCARE.NET - Fun Times at Puzzle Park</title>
+        <meta name="description" content="Welcome to Jumpscare.net - A spooky terminal experience">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="">
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                background-color: #000000;
+                color: #00ff41;
+                font-family: 'Courier New', Courier, monospace;
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+                overflow-x: hidden;
+                position: relative;
+            }
+
+            /* CRT Scanline Effect */
+            body::before {
+                content: "";
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: repeating-linear-gradient(
+                    0deg,
+                    rgba(0, 0, 0, 0.15),
+                    rgba(0, 0, 0, 0.15) 1px,
+                    transparent 1px,
+                    transparent 2px
+                );
+                pointer-events: none;
+                z-index: 1000;
+            }
+
+            /* CRT Flicker Effect */
+            @keyframes flicker {
+                0% { opacity: 0.97; }
+                50% { opacity: 1; }
+                100% { opacity: 0.97; }
+            }
+
+            body::after {
+                content: "";
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(18, 16, 16, 0.1);
+                opacity: 0.9;
+                pointer-events: none;
+                animation: flicker 0.15s infinite;
+                z-index: 999;
+            }
+
+            .container {
+                max-width: 1200px;
+                width: 100%;
+                position: relative;
+                z-index: 1;
+            }
+
+            .terminal-header {
+                text-align: center;
+                margin-bottom: 30px;
+                padding: 20px;
+                border: 2px solid #00ff41;
+                border-radius: 5px;
+                background-color: rgba(0, 0, 0, 0.8);
+                box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+            }
+
+            .logo-container {
+                margin-bottom: 20px;
+            }
+
+            .logo {
+                max-width: 100%;
+                height: auto;
+                display: block;
+                margin: 0 auto;
+                filter: drop-shadow(0 0 10px rgba(0, 255, 65, 0.5));
+            }
+
+            .terminal-title {
+                font-size: clamp(1.2rem, 4vw, 2.5rem);
+                font-weight: bold;
+                letter-spacing: 3px;
+                margin: 15px 0;
+                text-shadow: 0 0 10px rgba(0, 255, 65, 0.8);
+            }
+
+            .terminal-subtitle {
+                font-size: clamp(0.8rem, 2vw, 1rem);
+                color: #00cc33;
+                margin-top: 10px;
+            }
+
+            .terminal-content {
+                border: 2px solid #00ff41;
+                border-radius: 5px;
+                padding: 30px;
+                background-color: rgba(0, 0, 0, 0.8);
+                box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+                line-height: 1.8;
+            }
+
+            .prompt {
+                color: #00ff41;
+            }
+
+            .prompt::before {
+                content: "> ";
+                color: #00ff41;
+            }
+
+            .cursor {
+                display: inline-block;
+                width: 10px;
+                height: 20px;
+                background-color: #00ff41;
+                animation: blink 1s infinite;
+                margin-left: 5px;
+            }
+
+            @keyframes blink {
+                0%, 49% { opacity: 1; }
+                50%, 100% { opacity: 0; }
+            }
+
+            .warning-text {
+                color: #ff4444;
+                font-style: italic;
+                margin: 20px 0;
+                padding: 10px;
+                border-left: 3px solid #ff4444;
+            }
+
+            .info-section {
+                margin: 20px 0;
+            }
+
+            .info-section h2 {
+                font-size: clamp(1rem, 2.5vw, 1.5rem);
+                margin-bottom: 15px;
+                color: #00ff41;
+            }
+
+            .info-section p {
+                font-size: clamp(0.85rem, 1.8vw, 1rem);
+                margin-bottom: 10px;
+            }
+
+            .footer-text {
+                text-align: center;
+                margin-top: 30px;
+                font-size: clamp(0.7rem, 1.5vw, 0.9rem);
+                color: #00cc33;
+                opacity: 0.7;
+            }
+
+            /* Responsive Design */
+            @media (max-width: 768px) {
+                body {
+                    padding: 10px;
+                }
+
+                .terminal-header {
+                    padding: 15px;
+                    margin-bottom: 20px;
+                }
+
+                .terminal-content {
+                    padding: 20px;
+                }
+
+                .logo {
+                    max-width: 90%;
+                }
+
+                .terminal-title {
+                    letter-spacing: 2px;
+                }
+            }
+
+            @media (max-width: 480px) {
+                body {
+                    padding: 5px;
+                    justify-content: flex-start;
+                    padding-top: 20px;
+                }
+
+                .terminal-header {
+                    padding: 10px;
+                    margin-bottom: 15px;
+                }
+
+                .terminal-content {
+                    padding: 15px;
+                }
+
+                .terminal-title {
+                    letter-spacing: 1px;
+                }
+
+                .info-section {
+                    margin: 15px 0;
+                }
+            }
+
+            /* Print Styles */
+            @media print {
+                body::before,
+                body::after {
+                    display: none;
+                }
+            }
+        </style>
     </head>
     <body>
-        FTAPP Coming Soon!
-        <!--[if lt IE 7]>
-            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
-        <![endif]-->
-        
-        <script src="" async defer></script>
+        <div class="container">
+            <header class="terminal-header">
+                <div class="logo-container">
+                    <img src="assets/main_logo.png" alt="JUMPSCARE.NET - Fun Times at Puzzle Park" class="logo">
+                </div>
+                <h1 class="terminal-title">JUMPSCARE.NET</h1>
+                <p class="terminal-subtitle">System initialized | Mode: terminal/ink | Status: online</p>
+            </header>
+
+            <main class="terminal-content">
+                <div class="info-section">
+                    <p class="prompt">Welcome to the terminal<span class="cursor"></span></p>
+                </div>
+
+                <div class="warning-text">
+                    !!! NOTE: By accessing this site you agree not to scream louder than 67 dB. !!!
+                </div>
+
+                <div class="info-section">
+                    <h2>[ SYSTEM STATUS ]</h2>
+                    <p class="prompt">Connection established...</p>
+                    <p class="prompt">Loading spooky content...</p>
+                    <p class="prompt">Initializing jump scares...</p>
+                    <p class="prompt">Ready for Fun Times at Puzzle Park!</p>
+                </div>
+
+                <div class="info-section">
+                    <h2>[ ABOUT ]</h2>
+                    <p>Welcome to JUMPSCARE.NET - your portal to the mysterious world of Fun Times at Puzzle Park.</p>
+                    <p>This is a terminal-style interface for all things spooky and mysterious.</p>
+                </div>
+
+                <div class="footer-text">
+                    <p>Tip: If you hear a 'BEEP', that is normal.</p>
+                    <p>If you hear three, run a vibe check.</p>
+                    <p>© Jumpscare.net (pretend)</p>
+                </div>
+            </main>
+        </div>
     </body>
 </html>
